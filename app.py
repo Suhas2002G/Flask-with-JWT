@@ -2,8 +2,7 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import create_access_token,get_jwt_identity, JWTManager, jwt_required
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api
-
-from modules.password_hashing import hash_password, check_password 
+from modules.password_hashing import Authentication 
 
 app = Flask(__name__)
 
@@ -13,6 +12,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 api = Api(app)
 jwt = JWTManager(app)
+
+# instance for Authentication class 
+auth=Authentication()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -39,7 +41,7 @@ class UserRegistration(Resource):
         if User.query.filter_by(username=username).first():
             return {'message': 'Username already exists'}, 400
         
-        hashed_password = hash_password(password)
+        hashed_password = auth.hash_password(password)
 
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
@@ -71,7 +73,7 @@ class UserLogin(Resource):
         stored_hash = user.password
 
         # Verify password by comparing the entered password with the hashed password
-        if check_password(stored_hash, password):
+        if auth.check_password(stored_hash, password):
             access_token = create_access_token(identity=user.username)
             return {"message": "Login successful", 'access_token':access_token}, 200
         else:
@@ -80,6 +82,8 @@ class UserLogin(Resource):
 
 
 class Dashboard(Resource):
+    '''Dashboard class is a protected route that can only be accessed by logged-in users.'''
+    # The @jwt_required() decorator is used to protect the route
     @jwt_required()
     def get(self):
         current_user = get_jwt_identity()
