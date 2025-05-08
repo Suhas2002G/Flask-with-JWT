@@ -1,0 +1,6 @@
+SQLAlchemy
+flask
+flask-jwt-extended
+flask_restful
+bcrypt
+
