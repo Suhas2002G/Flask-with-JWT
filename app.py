@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_jwt_extended import create_access_token, JWTManager
+from flask_jwt_extended import create_access_token,get_jwt_identity, JWTManager, jwt_required
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api
 
@@ -79,12 +79,17 @@ class UserLogin(Resource):
         
 
 
-class 
+class Dashboard(Resource):
+    @jwt_required()
+    def get(self):
+        current_user = get_jwt_identity()
+        return {'msg' : f'Hello user : {current_user}, you are in protected route i.e. in Dashboard'}, 200
 
 
 
 api.add_resource(UserRegistration, '/register')
 api.add_resource(UserLogin, '/login')
+api.add_resource(Dashboard, '/dashboard')
 
 
         
