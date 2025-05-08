@@ -87,6 +87,10 @@ class Dashboard(Resource):
 
 
 
+
+# add_resource is used to add the resource to the api
+# The first argument is the resource class, and the second argument is the URL endpoint
+# The URL endpoint is the path that the resource will be available at
 api.add_resource(UserRegistration, '/register')
 api.add_resource(UserLogin, '/login')
 api.add_resource(Dashboard, '/dashboard')
