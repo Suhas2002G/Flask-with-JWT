@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from flask_jwt_extended import create_access_token,get_jwt_identity, JWTManager, jwt_required
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity, JWTManager, jwt_required
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api
 
@@ -73,7 +73,14 @@ class UserLogin(Resource):
         # Verify password by comparing the entered password with the hashed password
         if check_password(stored_hash, password):
             access_token = create_access_token(identity=user.username)
-            return {"message": "Login successful", 'access_token':access_token}, 200
+            refresh_token = create_refresh_token(identity=user.username)
+            return {
+                "message": "Login successful", 
+                "tokens": {
+                    "access_token" : access_token,
+                    "refresh_token" : refresh_token
+                }
+            }, 200
         else:
             return {"error": "Invalid password"}, 400
         
@@ -96,5 +103,5 @@ api.add_resource(Dashboard, '/dashboard')
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
 
