@@ -4,4 +4,7 @@ flask-jwt-extended
 flask_restful
 bcrypt
 flask_sqlalchemy
+redis 
+flask-redis
+
 
